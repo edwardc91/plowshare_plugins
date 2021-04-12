@@ -17,10 +17,15 @@
 # You should have received a copy of the GNU General Public License
 # along with Plowshare.  If not, see <http://www.gnu.org/licenses/>.
 
-MODULE_PIXELDRAIN_REGEXP_URL = 'https\?://\(www\.\)\?pixeldrain\.com/'
+MODULE_PIXELDRAIN_REGEXP_URL='https\?://\(www\.\)\?pixeldrain\.com/'
+
+MODULE_PIXELDRAIN_DOWNLOAD_OPTIONS=""
+MODULE_PIXELDRAIN_DOWNLOAD_RESUME=yes
+MODULE_PIXELDRAIN_DOWNLOAD_FINAL_LINK_NEEDS_COOKIE=no
+MODULE_PIXELDRAIN_DOWNLOAD_FINAL_LINK_NEEDS_EXTRA=()
+MODULE_PIXELDRAIN_DOWNLOAD_SUCCESSIVE_INTERVAL=
 
 pixeldrain_download() {
-    local -r COOKIE_FILE=$1
     local -r URL=$2
     local PAGE FILE_URL FILE_NAME FILE_ID BASE_URL
 
@@ -28,15 +33,21 @@ pixeldrain_download() {
 
     # File does not exist on this server
     # File has expired and does not exist anymore on this server
-    if match '404, File Not Found|File has expired\|HTTP Status 404' "$PAGE"; then
+    if match '404, File Not Found' "$PAGE"; then
         return $ERR_LINK_DEAD
     fi
 
-    detect_javascript || return
-
     FILE_NAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
 
-    FILE_ID=$(parse_quiet . 'https\?:pixeldrain\.com/\w/(.+)' <<< "$URL")
+    FILE_ID=$(parse . '/api/file/\([[:alnum:]]\+\)' <<< "$URL") || return
+
+    if [ -z "$FILE_ID" ]; then
+        log_error 'Could not parse file ID.'
+        return $ERR_FATAL
+    fi
+
+    log_debug "File/Folder ID: '$FILE_ID'"
+
     BASE_URL="https://pixeldrain.com/api/file/" 
     FILE_URL = "$BASE_URL$FILE_ID"
 
