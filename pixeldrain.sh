@@ -17,12 +17,12 @@
 # You should have received a copy of the GNU General Public License
 # along with Plowshare.  If not, see <http://www.gnu.org/licenses/>.
 
-MODULE_PIXELDRAIN_REGEXP_URL = '(https)?://(www.)?pixeldrain.com/'
+MODULE_PIXELDRAIN_REGEXP_URL = 'https\?://\(www\.\)\?pixeldrain\.com/'
 
 pixeldrain_download() {
     local -r COOKIE_FILE=$1
     local -r URL=$2
-    local PAGE FILE_URL FILE_NAME FILE_ID
+    local PAGE FILE_URL FILE_NAME FILE_ID BASE_URL
 
     PAGE=$(curl -L "$URL") || return
 
@@ -36,8 +36,8 @@ pixeldrain_download() {
 
     FILE_NAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
 
-    FILE_ID=$(parse_quiet . 'https\?://pixeldrain\.com/\w/(.+)' <<< "$URL")
-    local BASE_URL="https://pixeldrain.com/api/file/" 
+    FILE_ID=$(parse_quiet . 'https\?:pixeldrain\.com/\w/(.+)' <<< "$URL")
+    BASE_URL="https://pixeldrain.com/api/file/" 
     FILE_URL = "$BASE_URL$FILE_ID"
 
     echo "$FILE_URL"
