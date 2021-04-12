@@ -19,10 +19,26 @@
 
 MODULE_PIXELDRAIN_REGEXP_URL = 'https\?://\(www\.\)\?pixeldrain\.com/'
 
-xxx_download() {
+pixeldrain_download() {
     local -r COOKIE_FILE=$1
     local -r URL=$2
-    local PAGE FILE_URL FILE_NAME
+    local PAGE FILE_URL FILE_NAME FILE_ID
+
+    PAGE=$(curl -L "$URL") || return
+
+    # File does not exist on this server
+    # File has expired and does not exist anymore on this server
+    if match '404, File Not Found|File has expired\|HTTP Status 404' "$PAGE"; then
+        return $ERR_LINK_DEAD
+    fi
+
+    detect_javascript || return
+
+    FILE_NAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
+
+    FILE_ID=$(parse_quiet . 'https://pixeldrain.com/\w/(.+)' <<< "$URL")
+    local BASE_URL="https://pixeldrain.com/api/file/" 
+    FILE_URL = "$BASE_URL$FILE_ID"
 
     echo "$FILE_URL"
     echo "$FILE_NAME"
