@@ -66,3 +66,42 @@ pixeldrain_download() {
     echo "$FILENAME"
     return 0
 }
+
+# Probe a download URL
+# $1: cookie file (unused here)
+# $2: pixeldrain.com url
+# $3: requested capability list
+# stdout: 1 capability per line
+pixeldrain_probe() {
+    local -r URL=$2
+    local -r REQ_IN=$3
+    local -r BASE_URL=$(basename_url $URL)
+    local -r API_URL="$BASE_URL/api/file/"
+    local FILE_ID JSON RET REQ_OUT
+
+    FILE_ID=$(parse . 'https://pixeldrain.com/\w/\([[:alnum:]]\+\)' <<< "$URL") || return
+
+    if [ -z "$FILE_ID" ]; then
+        log_error 'Could not parse file ID.'
+        return $ERR_FATAL
+    fi
+
+    JSON=$(curl "${API_URL}/$FILE_ID/info") || return
+
+    RET=$(parse_json status <<< "$JSON")
+    if [ "$RET" -ne 0 ]; then
+        return $ERR_LINK_DEAD
+    fi
+
+    REQ_OUT=c
+
+    if [[ $REQ_IN = *f* ]]; then
+        parse_json_quiet 'name' <<< "$JSON" && REQ_OUT="${REQ_OUT}f"
+    fi
+
+    if [[ $REQ_IN = *s* ]]; then
+        parse_json_quiet 'size' <<< "$JSON" && REQ_OUT="${REQ_OUT}s"
+    fi
+
+    echo $REQ_OUT
+}
