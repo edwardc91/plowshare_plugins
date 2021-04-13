@@ -88,8 +88,8 @@ pixeldrain_probe() {
 
     JSON=$(curl "${API_URL}/$FILE_ID/info") || return
 
-    RET=$(parse_json status <<< "$JSON")
-    if [ "$RET" -ne 0 ]; then
+    RET=$(parse_json success <<< "$JSON")
+    if [ "$RET" -ne 'true' ]; then
         return $ERR_LINK_DEAD
     fi
 
