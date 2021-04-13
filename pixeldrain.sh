@@ -26,6 +26,10 @@ MODULE_PIXELDRAIN_DOWNLOAD_FINAL_LINK_NEEDS_COOKIE=no
 MODULE_PIXELDRAIN_DOWNLOAD_SUCCESSIVE_INTERVAL=
 
 pixeldrain_download() {
+    # Pixeldrain hoster serve the files through a api
+    # https://pixeldrain.com/api/file/<file_id>
+    # so is only required obtain file ID and file name
+
     local -r URL=$2
     local PAGE FILE_URL FILENAME FILE_ID BASE_URL API_BASE_URL
 
