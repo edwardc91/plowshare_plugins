@@ -3,6 +3,7 @@
 #
 # This file is to use with Plowshare.
 #
+# Check official plowshare repository https://github.com/mcrapet/plowshare
 # -- Copy from plowshare official modules --
 # Plowshare is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -46,7 +47,7 @@ pixeldrain_download() {
 
     FILENAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
 
-    FILE_ID=$(parse . 'https://pixeldrain.com//\w/\([[:alnum:]]\+\)' <<< "$URL") || return
+    FILE_ID=$(parse . 'https://pixeldrain.com/\w/\([[:alnum:]]\+\)' <<< "$URL") || return
 
     if [ -z "$FILE_ID" ]; then
         log_error 'Could not parse file ID.'
