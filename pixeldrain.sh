@@ -96,7 +96,6 @@ pixeldrain_probe() {
 
     if [[ $REQ_IN = *f* ]]; then
         parse_json_quiet 'name' <<< "$JSON" && REQ_OUT="${REQ_OUT}f"
-        parse_json_quiet 'size' <<< "$JSON" && REQ_OUT="${REQ_OUT}f"
     fi
 
     if [[ $REQ_IN = *s* ]]; then
