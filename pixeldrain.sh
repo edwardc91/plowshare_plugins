@@ -29,10 +29,10 @@ pixeldrain_download() {
     local -r URL=$2
     local PAGE FILE_URL FILENAME FILE_ID BASE_URL API_BASE_URL
 
-    log_debug "Checking file"
+    log_debug "Checking file..."
 
     BASE_URL=$(basename_url $URL)
-    API_BASE_URL='https://pixeldrain.com/api/file/'
+    API_BASE_URL="$BASE_URL/api/file/"
 
     PAGE=$(curl -L "$URL") || return
 
