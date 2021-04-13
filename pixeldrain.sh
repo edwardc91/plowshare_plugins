@@ -27,10 +27,10 @@ MODULE_PIXELDRAIN_DOWNLOAD_SUCCESSIVE_INTERVAL=
 
 pixeldrain_download() {
     local -r URL=$2
-    local PAGE FILE_URL FILE_NAME FILE_ID BASE_URL API_BASE_URL
+    local PAGE FILE_URL FILENAME FILE_ID BASE_URL API_BASE_URL
 
-    BASE_URL="https://pixeldrain.com/"
-    API_BASE_URL="https://pixeldrain.com/api/file/" 
+    BASE_URL=$(basename_url $URL)
+    API_BASE_URL='https://pixeldrain.com/api/file/'
 
     PAGE=$(curl -L "$URL") || return
 
@@ -40,7 +40,9 @@ pixeldrain_download() {
         return $ERR_LINK_DEAD
     fi
 
-    FILE_NAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
+    log_debug "File exists"
+
+    FILENAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
 
     FILE_ID=$(parse . 'https://pixeldrain.com//\w/\([[:alnum:]]\+\)' <<< "$URL") || return
 
@@ -55,5 +57,6 @@ pixeldrain_download() {
     FILE_URL = "$API_BASE_URL$FILE_ID"
 
     echo "$FILE_URL"
-    echo "$FILE_NAME"
+    echo "$FILENAME"
+    return 0
 }
