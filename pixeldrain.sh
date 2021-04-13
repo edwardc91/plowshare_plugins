@@ -42,7 +42,7 @@ pixeldrain_download() {
 
     FILE_NAME=$(parse_attr '=.og:title.' content <<< "$PAGE") || return
 
-    FILE_ID=$(parse . '$BASE_URL/\w/\([[:alnum:]]\+\)' <<< "$URL") || return
+    FILE_ID=$(parse . 'https://pixeldrain.com//\w/\([[:alnum:]]\+\)' <<< "$URL") || return
 
     if [ -z "$FILE_ID" ]; then
         log_error 'Could not parse file ID.'
@@ -56,5 +56,4 @@ pixeldrain_download() {
 
     echo "$FILE_URL"
     echo "$FILE_NAME"
-    return 0
 }
