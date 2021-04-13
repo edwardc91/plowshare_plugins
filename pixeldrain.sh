@@ -56,7 +56,7 @@ pixeldrain_download() {
     log_debug "File/Folder ID: '$FILE_ID'"
 
     
-    FILE_URL = "$API_BASE_URL$FILE_ID"
+    FILE_URL="$API_BASE_URL$FILE_ID"
 
     echo "$FILE_URL"
     echo "$FILENAME"
